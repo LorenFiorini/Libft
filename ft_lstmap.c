@@ -6,11 +6,26 @@
 /*   By: lfiorini <lfiorini@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/20 10:14:53 by lfiorini          #+#    #+#             */
-/*   Updated: 2022/11/13 12:15:08 by lfiorini         ###   ########.fr       */
+/*   Updated: 2022/11/13 15:17:10 by lfiorini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+
+static	t_list	*ft_valid(t_list *lst, void *(*f)(void *), void (*del)(void *))
+{
+	t_list	*head;
+
+	if (lst == NULL || f == NULL)
+		return (NULL);
+	head = ft_lstnew(f(lst->content));
+	if (!head)
+	{
+		ft_lstclear(&lst, del);
+		return (NULL);
+	}
+	return (head);
+}
 
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 {
@@ -18,15 +33,9 @@ t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 	t_list	*head;
 	t_list	*cur;
 
-	head = NULL;
-	if (lst == NULL || f == NULL)
+	head = ft_valid(lst, f, del);
+	if (head == NULL)
 		return (NULL);
-	if ((node = ft_lstnew(f(lst->content))) == NULL)
-	{
-		ft_lstclear(&lst, del);
-		return (NULL);
-	}
-	head = node;
 	cur = lst->next;
 	while (cur)
 	{
@@ -35,8 +44,6 @@ t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 		{
 			ft_lstclear(&head, del);
 			ft_lstclear(&lst, del);
-			//free(node);
-			//cur = NULL;
 			return (NULL);
 		}
 		ft_lstadd_back(&head, node);
