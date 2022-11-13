@@ -6,7 +6,7 @@
 /*   By: lfiorini <lfiorini@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 18:50:16 by lfiorini          #+#    #+#             */
-/*   Updated: 2022/11/13 13:56:12 by lfiorini         ###   ########.fr       */
+/*   Updated: 2022/11/13 14:50:44 by lfiorini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,17 +40,25 @@ static	int	ft_word_len(char const *s, char c, int start)
 	return (i);
 }
 
-static	void ft_copy_word(char *dst, char const *src, int start, int len)
+static	void	ft_copy_word(char *dst, char const *src, int *i, char c)
 {
-	int	i;
+	int	k;
 
-	i = 0;
-	while (i < len)
+	k = 0;
+	while (src[*i] && src[*i] != c)
+		dst[k++] = src[(*i)++];
+	dst[k] = '\0';
+}
+
+static	char	**ft_free(char **ans, int j)
+{
+	while (j >= 0)
 	{
-		dst[i] = src[start + i];
-		i++;
+		free(ans[j]);
+		j--;
 	}
-	dst[i] = '\0';
+	free(ans);
+	return (NULL);
 }
 
 char	**ft_split(char const *s, char c)
@@ -58,7 +66,6 @@ char	**ft_split(char const *s, char c)
 	char	**ans;
 	int		i;
 	int		j;
-	int		k;
 
 	i = 0;
 	j = 0;
@@ -69,27 +76,15 @@ char	**ft_split(char const *s, char c)
 		return (NULL);
 	while (s[i])
 	{
-		k = 0;
 		while (s[i] == c)
 			i++;
-		if (s[i] != c && s[i] != '\0')
+		if (s[i] && s[i] != c)
 		{
-			k = ft_word_len(s, c, i);
-			ans[j] = (char *)malloc(sizeof(char) * (k + 1));
-			ft_copy_word(ans[j], s, i, k + 1);
-
+			ans[j] = (char *)malloc(sizeof(char) * (ft_word_len(s, c, i) + 1));
+			if (!ans[j])
+				return (ft_free(ans, j));
+			ft_copy_word(ans[j++], s, &i, c);
 		}
-		/*if (!ans[j])
-		{
-			while (j--)
-				free(ans[j]);
-			free(ans);
-			return (NULL);
-		}
-		while (s[i] != c && s[i] != '\0')
-			ans[j][k++] = s[i++];
-		if (k != 0)
-			ans[j++][k] = '\0';*/
 	}
 	ans[j] = NULL;
 	return (ans);
