@@ -6,7 +6,7 @@
 /*   By: lfiorini <lfiorini@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/20 10:14:53 by lfiorini          #+#    #+#             */
-/*   Updated: 2022/11/13 15:17:10 by lfiorini         ###   ########.fr       */
+/*   Updated: 2022/11/13 15:31:16 by lfiorini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,17 @@
 static	t_list	*ft_valid(t_list *lst, void *(*f)(void *), void (*del)(void *))
 {
 	t_list	*head;
+	t_list	*node;
 
-	if (lst == NULL || f == NULL)
+	if (lst == NULL || f == NULL || del == NULL)
 		return (NULL);
-	head = ft_lstnew(f(lst->content));
-	if (!head)
+	node = ft_lstnew(f(lst->content));
+	if (node == NULL)
 	{
 		ft_lstclear(&lst, del);
 		return (NULL);
 	}
+	ft_lstadd_back(&head, node);
 	return (head);
 }
 
@@ -49,6 +51,5 @@ t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 		ft_lstadd_back(&head, node);
 		cur = cur->next;
 	}
-	node = NULL;
 	return (head);
 }
