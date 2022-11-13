@@ -6,11 +6,26 @@
 /*   By: lfiorini <lfiorini@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/20 10:14:53 by lfiorini          #+#    #+#             */
-/*   Updated: 2022/11/13 17:57:49 by lfiorini         ###   ########.fr       */
+/*   Updated: 2022/11/13 18:52:26 by lfiorini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+
+static	t_list	*ft_lstnew_safe(void *content)
+{
+	t_list	*elem;
+
+	elem = (t_list *)malloc(sizeof(t_list));
+	if (elem == NULL)
+	{
+		free(content);
+		return (NULL);
+	}
+	elem->content = content;
+	elem->next = NULL;
+	return (elem);
+}
 
 static	t_list	*ft_valid(t_list *lst, void *(*f)(void *), void (*del)(void *))
 {
@@ -18,10 +33,9 @@ static	t_list	*ft_valid(t_list *lst, void *(*f)(void *), void (*del)(void *))
 
 	if (lst == NULL || f == NULL || del == NULL)
 		return (NULL);
-	head = ft_lstnew((*f)(lst->content));
+	head = ft_lstnew_safe((*f)(lst->content));
 	if (head == NULL)
 	{
-		ft_lstclear(&lst, del);
 		return (NULL);
 	}
 	return (head);
@@ -36,19 +50,18 @@ t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 	head = ft_valid(lst, f, del);
 	if (head == NULL)
 		return (NULL);
+	node = head;
 	cur = lst->next;
 	while (cur)
 	{
-		node = ft_lstnew((*f)(cur->content));
-		if (node == NULL)
+		node->next = ft_lstnew_safe((*f)(cur->content));
+		if (node->next == NULL)
 		{
 			ft_lstclear(&head, del);
-			ft_lstclear(&cur, del);
 			return (NULL);
 		}
-		ft_lstadd_back(&head, node);
+		node = node->next;
 		cur = cur->next;
 	}
-	node = NULL;
 	return (head);
 }
