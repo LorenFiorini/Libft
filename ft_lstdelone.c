@@ -6,7 +6,7 @@
 /*   By: lfiorini <lfiorini@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/20 10:08:32 by lfiorini          #+#    #+#             */
-/*   Updated: 2022/11/11 04:54:57 by lfiorini         ###   ########.fr       */
+/*   Updated: 2022/11/13 17:40:34 by lfiorini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,10 @@
 
 void	ft_lstdelone(t_list *lst, void (*del)(void *))
 {
-	if (lst == NULL || del == NULL)
-		return ;
-	del(lst->content);
-	free(lst);
+	if (lst != NULL)
+	{
+		if (del != NULL)
+			del(lst->content);
+		free(lst);
+	}
 }
